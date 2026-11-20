@@ -49,6 +49,7 @@ public final class PetService extends Service implements Choreographer.FrameCall
     static final String CHANNEL = "passeio";
 
     private WindowManager wm;
+    private Context winCtx;
     private final World world = new World();
     private final ArrayList<PetWin> wins = new ArrayList<>();
     private final Handler h = new Handler(Looper.getMainLooper());
@@ -68,7 +69,15 @@ public final class PetService extends Service implements Choreographer.FrameCall
 
     @Override public void onCreate() {
         super.onCreate();
-        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        winCtx = this;
+        if (Build.VERSION.SDK_INT >= 30) {
+            try {
+                android.hardware.display.DisplayManager dm = getSystemService(android.hardware.display.DisplayManager.class);
+                Context dc = createDisplayContext(dm.getDisplay(android.view.Display.DEFAULT_DISPLAY));
+                winCtx = dc.createWindowContext(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, null);
+            } catch (Exception e) { winCtx = this; }
+        }
+        wm = winCtx.getSystemService(WindowManager.class);
         density = getResources().getDisplayMetrics().density;
         sfx = new Sfx(this);
         world.sound = sfx;
@@ -250,7 +259,7 @@ public final class PetService extends Service implements Choreographer.FrameCall
         if (shown || !Prefs.canOverlay(this)) return;
         measure();
         for (Pet p : world.pets) {
-            PetWin v = new PetWin(this, p);
+            PetWin v = new PetWin(winCtx, p);
             v.lp = baseParams(true);
             v.place();
             try { wm.addView(v, v.lp); wins.add(v); } catch (Exception ignored) { }
@@ -330,7 +339,7 @@ public final class PetService extends Service implements Choreographer.FrameCall
         setupMode = true;
         hidePets();
         measure();
-        setupView = new SetupView(this, this::finishSetup);
+        setupView = new SetupView(winCtx, this, this::finishSetup);
         WindowManager.LayoutParams lp = baseParams(true);
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.MATCH_PARENT;

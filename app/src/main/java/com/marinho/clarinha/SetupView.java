@@ -1,6 +1,7 @@
 package com.marinho.clarinha;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.view.MotionEvent;
@@ -32,8 +33,8 @@ final class SetupView extends View {
             "Use − e + até o quadrado ficar",
             "do tamanho do ícone."};
 
-    SetupView(PetService svc, Runnable done) {
-        super(svc);
+    SetupView(Context ctx, PetService svc, Runnable done) {
+        super(ctx);
         this.svc = svc;
         this.done = done;
         d = svc.getResources().getDisplayMetrics().density;
