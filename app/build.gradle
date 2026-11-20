@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.marinho.clarinha'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.marinho.clarinha'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('keystore/clarinha.jks')
+            storePassword 'QDjDsczdAfWnBO_-JOl7IbKF'
+            keyAlias 'clarinha'
+            keyPassword 'QDjDsczdAfWnBO_-JOl7IbKF'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+
+    dependenciesInfo {
+        includeInApk false
+        includeInBundle false
+    }
+}
